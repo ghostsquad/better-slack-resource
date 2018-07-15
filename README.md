@@ -197,6 +197,7 @@ resources:
 
 jobs:
 - name: example
+  get: metadata
   plan:
   - task: construct-starting-msg
       config:
@@ -260,7 +261,7 @@ jobs:
       attachments_file: starting-msg/message.json
 ```
 
-That's `59` lines of code for 1 slack notification, this is also divided between 2 steps. Good Grief!!!
+That's `59` lines of code for 1 slack notification, this is also divided between 3 steps (including metadata). Good Grief!!!
 
 ## Development
 
