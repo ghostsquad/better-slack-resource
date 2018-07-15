@@ -197,8 +197,8 @@ resources:
 
 jobs:
 - name: example
-  get: metadata
   plan:
+  - get: metadata
   - task: construct-starting-msg
       config:
         platform: linux
