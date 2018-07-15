@@ -1,19 +1,23 @@
-# Slack Resource for Concourse
+# Slack Off
 
-A Concourse resource for sending slack notifications
+A [Concourse](https://concourse-ci.org/) resource for sending slack notifications
+
+
+## Quick Start
+
+Continue reading for `source` and `params` options.
 
 ```yaml
-
 resource_types:
-- name: better-slack
+- name: slackoff
   type: docker-image
   source:
-    repository: ghostsquad/better-slack-resource
+    repository: ghostsquad/slackoff
     tag: latest
 
 resources:
 - name: slack
-  type: better-slack
+  type: slackoff
   source:
     ...
 
@@ -257,3 +261,11 @@ jobs:
 ```
 
 That's `59` lines of code for 1 slack notification, this is also divided between 2 steps. Good Grief!!!
+
+## Development
+
+The docker container takes care of everything, see that for more instructions
+
+```bash
+docker build -t slack-off .
+```
