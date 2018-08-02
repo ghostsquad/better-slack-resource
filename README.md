@@ -93,9 +93,9 @@ jobs:
 
 - `channel`: *optional* Overrides the channel(s) set in the `source` configuration (if set), as well as the default channel for the webhook. #channel and @user forms are allowed. You can notify multiple channels separated by whitespace, like #channel @user.
 
-- `channel_append`: *optional* Instead of overriding the `source` channel, this will add one more more channels to the list. #channel and @user forms are allowed. You can notify multiple channels separated by whitespace, like #channel @user.
+- `channel_append`: *optional* Instead of overriding the `source` channel, this will add one more more channels to the list. #channel and @user forms are allowed. You can notify multiple channels separated by whitespace, like #channel @user. May be combined with `channel`.
 
-- `channel_file`: *optional* File that contains a list of channels to send message to. If `channel` or `channel_append` is also specified, the two lists will be concatenated.
+- `channel_file`: *optional* File that contains a list of channels to send message to. May be used with `channel` and/or `channel_append`. The lists will be concatenated.
 
 - `icon_url`: *optional* Override icon by providing URL to the image.
 

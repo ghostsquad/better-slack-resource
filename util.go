@@ -2,22 +2,14 @@ package slackoff
 
 import (
 	"fmt"
-	"os"
-	"github.com/mitchellh/colorstring"
 	"net/http"
 	"github.com/pkg/errors"
 	"bytes"
 	"encoding/json"
+	"github.com/fatih/color"
 )
 
-func Fatal(doing string, err error) {
-	Sayf(colorstring.Color("[red]error %s: %s\n"), doing, err)
-	os.Exit(1)
-}
-
-func Sayf(message string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, message, args...)
-}
+var ErrorColor = color.New(color.FgWhite, color.BgRed, color.Bold)
 
 // StatusCodeError represents an http response error.
 // type httpStatusCode interface { HTTPStatusCode() int } to handle it.

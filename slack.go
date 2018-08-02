@@ -31,7 +31,7 @@ func AssertSlackUrl(slackUrl string) error {
 	}
 
 	if u.Scheme != "https" {
-		return NewErrInvalidSlackUrl("Cowardly refusing to accept a non-https address")
+		return NewErrInvalidSlackUrl("Cowardly refusing to accept address without TLS")
 	}
 
 	validHost := "hooks.slack.com"
