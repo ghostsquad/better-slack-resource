@@ -9,8 +9,8 @@ import (
 )
 
 type Request struct {
-	Source resourcemodels.Source	`json:"source"  validate:"required"`
-	Params Params 								`json:"params"  validate:"required"`
+	Source resourcemodels.Source `json:"source" validate:"required"`
+	Params Params                `json:"params" validate:"required"`
 }
 
 func (req *Request) Load(re io.Reader) error {
