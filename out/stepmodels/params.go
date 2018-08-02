@@ -7,12 +7,12 @@ import (
 )
 
 type Params struct {
-	Template       	string 						`json:"template"`
-	TemplateFile   	string 						`json:"template_file"`
-	FileVars  		 	map[string]string `json:"file_vars"      validate:"dive,keys,required,endkeys,required"`
-	Vars       		 	map[string]string `json:"vars"           validate:"dive,keys,required,endkeys,required"`
-	Channel				 	string 						`json:"channel"`
-	ChannelAppend  	string 						`json:"channel_append"`
+	Template				string 						`json:"template"`
+	TemplateFile		string 						`json:"template_file"`
+	FileVars				map[string]string	`json:"file_vars"      validate:"dive,keys,required,endkeys,required"`
+	Vars						map[string]string	`json:"vars"           validate:"dive,keys,required,endkeys,required"`
+	Channel					string 						`json:"channel"`
+	ChannelAppend		string 						`json:"channel_append"`
 	ChannelFile			string 						`json:"channel_file"`
 	IconUrl					string 						`json:"icon_url"`
 	IconEmoji				string 						`json:"icon_emoji"`
