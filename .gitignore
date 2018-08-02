@@ -13,3 +13,4 @@
 
 # jetbrains
 .idea/
+/dist/

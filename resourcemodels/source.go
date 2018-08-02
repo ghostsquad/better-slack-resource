@@ -1,4 +1,4 @@
-package models
+package resourcemodels
 
 type Source struct {
 	Url         string `json:"url"`

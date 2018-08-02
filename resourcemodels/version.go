@@ -1,4 +1,4 @@
-package models
+package resourcemodels
 
 type Version struct {
 	Path      string `json:"path,omitempty"`

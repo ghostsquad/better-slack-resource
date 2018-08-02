@@ -1,4 +1,4 @@
-package models
+package stepmodels
 
 type Params struct {
 	Template       	string `json:"template"`

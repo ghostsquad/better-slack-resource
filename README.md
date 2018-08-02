@@ -61,7 +61,7 @@ jobs:
 
 - `template_file` - You may provide the template described above as a file instead of inline.
 
-- `file_vars` - A map. `key` is an arbitrary string, the `value` is a path to a file.
+- `file_vars` - A JSON map, with the `key` being a string value you choose, the `value` is a path to a file.
 
     ```yaml
     file_vars:
@@ -75,7 +75,7 @@ jobs:
     {{ .FileVars["foo_key"] }}
     ```
 
-- `vars` - A JSON map of static values that are available within a template.
+- `vars` - A JSON map of static keys & values that are available within a template.
 
     ```yaml
     vars:
