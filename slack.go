@@ -1,7 +1,6 @@
 package slackoff
 
 import (
-	"net/url"
 	"encoding/json"
 	"github.com/nlopes/slack"
 )
@@ -19,12 +18,7 @@ func (m *WebhookMessage) NewWebhookMessage(payload string) error {
 }
 
 func PostWebhookMessage(poster HttpPoster, url string, msg *WebhookMessage) error {
-	err := AssertSlackUrl(url)
-	if err != nil {
-		return err
-	}
-
-	_, err = poster.Post(url, msg)
+	_, err := poster.Post(url, msg)
 	if err != nil {
 		return err
 	}
@@ -45,12 +39,6 @@ func (e *ErrInvalidSlackUrl) Error() string {
 }
 
 func AssertSlackUrl(slackUrl string) error {
-	_, err := url.Parse(slackUrl)
-
-	if err != nil {
-		return err
-	}
-
 	// This commented to allow for easier testing
 	// TODO: include strict validations + tests
 	//

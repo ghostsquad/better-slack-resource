@@ -12,22 +12,23 @@ func TestAssertSlackUrl(t *testing.T) {
 	}
 }
 
-func TestAssertSlackUrlWrongSchema(t *testing.T) {
-	val := "http://hooks.slack.com/foo"
-
-	err := AssertSlackUrl(val)
-
-	if err == nil {
-		t.Errorf("An error was not received")
-	}
-}
-
-func TestAssertSlackUrlWrongDomain(t *testing.T) {
-	val := "https://notslack.com/foo"
-
-	err := AssertSlackUrl(val)
-
-	if err == nil {
-		t.Errorf("An error was not received")
-	}
-}
+//
+//func TestAssertSlackUrlWrongSchema(t *testing.T) {
+//	val := "http://hooks.slack.com/foo"
+//
+//	err := AssertSlackUrl(val)
+//
+//	if err == nil {
+//		t.Errorf("An error was not received")
+//	}
+//}
+//
+//func TestAssertSlackUrlWrongDomain(t *testing.T) {
+//	val := "https://notslack.com/foo"
+//
+//	err := AssertSlackUrl(val)
+//
+//	if err == nil {
+//		t.Errorf("An error was not received")
+//	}
+//}
