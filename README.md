@@ -268,10 +268,24 @@ You can compare this to the [example above](#dynamic-example).
 
 ## Development
 
+### Docker
+
 The docker container takes care of everything, see that for more instructions
 
 ```bash
 docker build -t slack-off .
+```
+
+### Local
+
+[dep](https://golang.github.io/dep/docs/installation.html) is required for dependencies
+
+To run tests:
+```bash
+dep ensure
+go test ./... -tags=unit
+# or
+go test ./... -tags=integration
 ```
 
 ### Reference

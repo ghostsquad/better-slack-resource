@@ -25,7 +25,7 @@ RUN dep ensure -vendor-only
 
 COPY . .
 
-RUN go test ./...
+RUN go test ./... -tags=unit
 
 RUN go build -o dist/out cmd/out/out.go
 

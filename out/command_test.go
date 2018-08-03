@@ -1,3 +1,5 @@
+// +build unit
+
 package out
 
 import (
@@ -7,4 +9,3 @@ import (
 func Test(t *testing.T) {
 
 }
-
