@@ -126,7 +126,69 @@ func TestParams_GetExtraChannels_WhenChannelAppendHasOneValue(t *testing.T) {
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
 
-	_, err := p.GetExtraChannels(mockReader)
+	channels, err := p.GetExtraChannels(mockReader)
 
 	is.Nil(err)
+	is.Equal(channels, []string{"ch1"})
+}
+
+func TestParams_GetExtraChannels_WhenChannelAppendHasMultipleValue(t *testing.T) {
+	is := is.New(t)
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	p := Params{
+		ChannelAppend: "ch1    ch2",
+	}
+
+	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
+
+	channels, err := p.GetExtraChannels(mockReader)
+
+	is.Nil(err)
+	is.Equal(channels, []string{"ch1", "ch2"})
+}
+
+func TestParams_GetExtraChannels_WhenChannelFileIncluded(t *testing.T) {
+	is := is.New(t)
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	expectedPath := "path/to/channels"
+
+	p := Params{
+		ChannelFile: expectedPath,
+	}
+
+	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
+	mockReader.EXPECT().ReadFile(expectedPath).Return("ch1    ch2\n ch3\tch4", nil)
+
+	channels, err := p.GetExtraChannels(mockReader)
+
+	is.Nil(err)
+	is.Equal(channels, []string{"ch1", "ch2", "ch3", "ch4"})
+}
+
+func TestParams_GetExtraChannels_WhenChannelAppendAndChannelFileIncluded(t *testing.T) {
+	is := is.New(t)
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	expectedPath := "path/to/channels"
+
+	p := Params{
+		ChannelAppend: "ch1 ch2",
+		ChannelFile: expectedPath,
+	}
+
+	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
+	mockReader.EXPECT().ReadFile(expectedPath).Return("ch3 ch4", nil)
+
+	channels, err := p.GetExtraChannels(mockReader)
+
+	is.Nil(err)
+	is.Equal(channels, []string{"ch1", "ch2", "ch3", "ch4"})
 }
