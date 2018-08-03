@@ -37,20 +37,3 @@ func NewErrInvalidSlackUrl(message string) *ErrInvalidSlackUrl {
 func (e *ErrInvalidSlackUrl) Error() string {
 	return e.message
 }
-
-func AssertSlackUrl(slackUrl string) error {
-	// This commented to allow for easier testing
-	// TODO: include strict validations + tests
-	//
-	//if u.Scheme != "https" {
-	//	return NewErrInvalidSlackUrl("Cowardly refusing to accept address without TLS")
-	//}
-	//
-	//validHost := "hooks.slack.com"
-	//
-	//if u.Host != validHost {
-	//	return NewErrInvalidSlackUrl(fmt.Sprintf("Cowardly refusing to accept a url not sent to: %s", validHost))
-	//}
-
-	return nil
-}
