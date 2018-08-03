@@ -87,62 +87,6 @@ jobs:
 
 [***Compare to how this would be done with cfcommunity/slack-notification-resource***](#why-did-i-make-this)
 
-```
-...
-
-resources:
-- name: source
-  type: git
-  source:
-    uri: git@github.com:example/example.git
-    branch: example
-
-- name: my-version
-  type: semver
-  source: { ... }
-
-...
-
-jobs:
-- name: example
-  plan:
-  - get: source
-  - get: my-version
-    params: {bump: minor}
-  - put: slack
-    params:
-      template: |
-        {
-            "attachments": [
-                {
-                  "fallback": "Build Started",
-                  "color": "#439FE0",
-                  "text": "Build Started",
-                  "title": ":gear: Build started for {{ .Vars['PROJECT_NAME'] }}",
-                  "title_link":  "{{ .Metadata.BuildUrl }}",
-                  "fields": [
-                    {
-                      "title": "Project",
-                      "value": "{{ .Vars['PROJECT_NAME'] }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Revision",
-                      "value": "{{ .FileVars['VERSION'] }}",
-                      "short": true
-                    }
-                  ]
-                }
-            ]
-        }
-      file_vars:
-        VERSION: my-version/version
-
-      vars:
-        PROJECT_NAME: my-project
-
-```
-
 ## Get (Not Supported)
 
 This is currently not supported, but I plan on seeing if it's possible to provide bot-like functionality within a concourse pipeline. Who knows!
@@ -153,7 +97,7 @@ This is currently not supported, but I plan on seeing if it's possible to provid
 
 ## Why did I make this?
 
-Well, I'll show up. Here's what my slack notifications used to look in my pipelines. I didn't want just static messages, I wanted rich, descriptive, dynamic messages. So I had to do this:
+Here's what my slack notifications used to look in my pipelines. I didn't want just static messages, I wanted rich, descriptive, dynamic messages. So I had to do this:
 
 ```
 resource_types:
@@ -177,10 +121,16 @@ resources:
 - name: metadata
   type: metadata
 
+- name: semver
+  type: semver
+  source:
+    ...
+
 jobs:
 - name: example
   plan:
   - get: metadata
+  - get: semver
   - task: construct-starting-msg
       config:
         platform: linux
@@ -192,7 +142,7 @@ jobs:
         params:
           PROJECT_NAME: My Project
         inputs:
-        - name: package-version-semver
+        - name: semver
         - name: metadata
         outputs:
         - name: starting-msg
@@ -209,7 +159,7 @@ jobs:
               export BUILD_ID=$(cat metadata/build_id)
               export BUILD_NAME=$(cat metadata/build_name)
 
-              export PACKAGE_VERSION=$(cat ./package-version-semver/version)
+              export VERSION=$(cat ./semver/version)
 
               cat <<EOF > ./starting-msg/message.json
               [
@@ -227,7 +177,7 @@ jobs:
                     },
                     {
                       "title": "Revision",
-                      "value": "${PACKAGE_VERSION}",
+                      "value": "${VERSION}",
                       "short": true
                     }
                   ]
@@ -243,7 +193,79 @@ jobs:
       attachments_file: starting-msg/message.json
 ```
 
-That's `59` lines of code for 1 slack notification, this is also divided between 3 steps (including metadata). Good Grief!!!
+That's `59` lines of code for 1 slack notification (starting at the `construct` task, and ending at the end of `put`), divided between 2 steps.
+
+Here's the same thing using `slack-off`.
+
+```yaml
+resource_types:
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: ghostsquad/slack-off
+    tag: latest
+
+- name: metadata
+  type: docker-image
+  source:
+    repository: olhtbr/metadata-resource
+
+resources:
+- name: slack-alert
+  type: slack-notification
+  source:
+    url: ((slack-url))
+
+- name: semver
+  type: semver
+  source:
+    ...
+
+jobs:
+- name: example
+  plan:
+  - get: metadata
+  - get: semver
+  - put: slack
+    params:
+      template: |
+        {
+          "attachments": [
+            {
+              "fallback": "Build Started",
+              "color": "#439FE0",
+              "text": "Build Started",
+              "title": ":gear: Build started for ${PROJECT_NAME}",
+              "title_link": {{ printf "%s/teams/%s/pipelines/%s/jobs/%s/builds/%" FileVars["ATC_EXTERNAL_URL"] FileVars["BUILD_TEAM_NAME"] FileVars["BUILD_PIPELINE_NAME"] FileVars["BUILD_JOB_NAME"] FileVars["BUILD_NAME"] }}",
+              "fields": [
+                {
+                  "title": "Project",
+                  "value": "{{ Vars["PROJECT_NAME"] }}",
+                  "short": true
+                },
+                {
+                  "title": "Revision",
+                  "value": "{{ FileVars["VERSION"] }}",
+                  "short": true
+                }
+              ]
+            }
+          ]
+        }
+      file_vars:
+        ATC_EXTERNAL_URL:    metadata/atc_external_url
+        BUILD_TEAM_NAME:     metadata/build_team_name
+        BUILD_PIPELINE_NAME: metadata/build_pipeline_name
+        BUILD_JOB_NAME:      metadata/build_job_name
+        BUILD_ID:            metadata/build_id
+        BUILD_NAME:          metadata/build_name
+        VERSION:             semver/version
+
+      vars:
+        PROJECT_NAME: My Project
+```
+
+What you see above is `36` lines of code (just the `put` is counted), 1 step, and much more readable.
 
 ## Development
 
