@@ -85,7 +85,7 @@ jobs:
 
 ### Dynamic Example
 
-[***Compare to how this would be done with cfcommunity/slack-notification-resource***](#using-ghostsquad-slack-off-resource)
+[***Compare to how this would be done with cfcommunity/slack-notification-resource***](#using-ghostsquad/slack-off-resource)
 
 ## Get (Not Supported)
 
