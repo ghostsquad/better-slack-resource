@@ -53,6 +53,6 @@ func reportAndExitAsNecessary(err error) {
 	}
 }
 
-func printErrorMessage(format string, a ...interface{}) string {
+func printErrorMessage(format string, a ...interface{}) {
 	os.Stderr.Write([]byte(slackoff.ErrorColor.Sprintf(format, a...)))
 }
