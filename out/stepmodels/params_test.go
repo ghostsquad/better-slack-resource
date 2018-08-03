@@ -1,11 +1,14 @@
 package stepmodels
 
 import (
-"testing"
+	"testing"
 	"github.com/ghostsquad/slack-off"
 	"github.com/tylerb/is"
 	"github.com/golang/mock/gomock"
 	"github.com/ghostsquad/slack-off/mocks"
+	"errors"
+	"fmt"
+	"github.com/hashicorp/go-multierror"
 )
 
 func TestParams_RegisterValidations_WhenTemplateGiven(t *testing.T) {
@@ -191,4 +194,94 @@ func TestParams_GetExtraChannels_WhenChannelAppendAndChannelFileIncluded(t *test
 
 	is.Nil(err)
 	is.Equal(channels, []string{"ch1", "ch2", "ch3", "ch4"})
+}
+
+func TestParams_GetFileVars(t *testing.T) {
+	is := is.New(t)
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	expectedPath := "path/to/file1"
+	expectedKey := "fookey"
+	expectedValue := "foovalue"
+
+	p := Params{
+		FileVars: map[string]string{
+			expectedKey: expectedPath,
+		},
+	}
+
+	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
+	mockReader.EXPECT().ReadFile(expectedPath).Return(expectedValue, nil)
+
+	fileVars, err := p.GetFileVars(mockReader)
+
+	is.Nil(err)
+	is.Equal(fileVars, map[string]string{expectedKey: expectedValue})
+}
+
+func TestParams_GetFileVars_WhenMultipleFiles(t *testing.T) {
+	is := is.New(t)
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	expectedPath1 := "path/to/file1"
+	expectedKey1 := "fookey1"
+	expectedValue1 := "foovalue1"
+
+	expectedPath2 := "path/to/file2"
+	expectedKey2 := "fookey2"
+	expectedValue2 := "foovalue2"
+
+	p := Params{
+		FileVars: map[string]string{
+			expectedKey1: expectedPath1,
+			expectedKey2: expectedPath2,
+		},
+	}
+
+	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
+	mockReader.EXPECT().ReadFile(expectedPath1).Return(expectedValue1, nil)
+	mockReader.EXPECT().ReadFile(expectedPath2).Return(expectedValue2, nil)
+
+	fileVars, err := p.GetFileVars(mockReader)
+
+	is.Nil(err)
+	is.Equal(fileVars, map[string]string{
+		expectedKey1: expectedValue1,
+		expectedKey2: expectedValue2,
+	})
+}
+
+func TestParams_GetFileVars_WhenReadErrorOccurs(t *testing.T) {
+	is := is.New(t)
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	expectedPath1 := "path/to/file1"
+	expectedKey1 := "fookey1"
+
+	expectedPath2 := "path/to/file2"
+	expectedKey2 := "fookey2"
+
+	p := Params{
+		FileVars: map[string]string{
+			expectedKey1: expectedPath1,
+			expectedKey2: expectedPath2,
+		},
+	}
+
+	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
+	mockReader.EXPECT().ReadFile(expectedPath1).Return("", errors.New(fmt.Sprintf("file read err: %s", expectedPath1)))
+	mockReader.EXPECT().ReadFile(expectedPath2).Return("", errors.New(fmt.Sprintf("file read err: %s", expectedPath2)))
+
+	_, err := p.GetFileVars(mockReader)
+
+	is.NotNil(err)
+	mErr, ok := err.(*multierror.Error)
+	is.True(ok)
+	is.Len(mErr.Errors, 2)
 }

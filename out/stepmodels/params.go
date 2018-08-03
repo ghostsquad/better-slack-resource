@@ -5,6 +5,7 @@ import (
 	"github.com/ghostsquad/slack-off"
 	"strings"
 	"github.com/hashicorp/go-multierror"
+	"fmt"
 )
 
 type Params struct {
@@ -71,10 +72,12 @@ func (p *Params) GetExtraChannels(reader slackoff.FileReader) (channels []string
 	return
 }
 
-func (p *Params) GetFileVars(reader slackoff.FileReader) (fileVars map[string]string, err error) {
+func (p *Params) GetFileVars(reader slackoff.FileReader) (map[string]string, error) {
 	var errs *multierror.Error
+	fileVars := make(map[string]string)
 
 	for k, v := range p.FileVars {
+		fmt.Println(v)
 		content, readErr := reader.ReadFile(v)
 		if readErr != nil {
 			errs = multierror.Append(errs, readErr)
@@ -82,9 +85,9 @@ func (p *Params) GetFileVars(reader slackoff.FileReader) (fileVars map[string]st
 		fileVars[k] = content
 	}
 
-	err = errs.ErrorOrNil()
+	err := errs.ErrorOrNil()
 
-	return
+	return fileVars, err
 }
 
 // Interface assertions
