@@ -91,7 +91,8 @@ func (c *command) Run(request stepmodels.Request) (*stepmodels.Response, error) 
 	for _, channel := range channels {
 		webhookMsg.Channel = channel
 
-		err = slackoff.PostWebhookMessage(c.httpPoster, request.Source.Url, webhookMsg)
+		// TODO look at the response, and do something with it
+		_, err := c.httpPoster.Post(request.Source.Url, webhookMsg)
 		if err != nil {
 			return nil, err
 		}

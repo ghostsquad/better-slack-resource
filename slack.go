@@ -16,24 +16,3 @@ type WebhookMessage struct {
 func (m *WebhookMessage) NewWebhookMessage(payload string) error {
 	return json.Unmarshal([]byte(payload), m)
 }
-
-func PostWebhookMessage(poster HttpPoster, url string, msg *WebhookMessage) error {
-	_, err := poster.Post(url, msg)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-type ErrInvalidSlackUrl struct {
-	message string
-}
-func NewErrInvalidSlackUrl(message string) *ErrInvalidSlackUrl {
-	return &ErrInvalidSlackUrl{
-		message: message,
-	}
-}
-func (e *ErrInvalidSlackUrl) Error() string {
-	return e.message
-}
