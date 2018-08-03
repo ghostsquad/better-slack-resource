@@ -10,11 +10,15 @@ RUN set -ex; \
 # stage: build
 FROM golang:alpine3.8 as build
 
-WORKDIR /go/src/app
-COPY glide.yaml .
+COPY --from=instrumentisto/dep:0.5.0 /usr/local/bin/dep /usr/local/bin/dep
 
-RUN set -ex; \
-    glide install
+WORKDIR /go/src/app
+
+COPY Gopkg.* .
+
+RUN dep ensure -vendor-only
+
+COPY . .
 
 RUN set -ex; \
     go build -o dist/out cmd/out/out.go

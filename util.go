@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/fatih/color"
+	"io/ioutil"
 )
 
 var ErrorColor = color.New(color.FgWhite, color.BgRed, color.Bold)
@@ -52,5 +53,22 @@ func (h *HttpClient) Post(url string, jsonPayload interface{}) (*http.Response, 
 	return response, nil
 }
 
-// Interface assertions
+// Interface assertion
 var _ HttpPoster = (*HttpClient)(nil)
+
+type FileReader interface {
+	ReadFile(filename string) (string, error)
+}
+
+type IOFileReader struct {}
+func (i *IOFileReader) ReadFile(filename string) (string, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
+}
+
+// Interface assertion
+var _ FileReader = (*IOFileReader)(nil)

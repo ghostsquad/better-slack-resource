@@ -13,12 +13,30 @@ type Request struct {
 	Params Params                `json:"params" validate:"required"`
 }
 
-func (req *Request) Load(re io.Reader) error {
+func (req *Request) Populate(re io.Reader) error {
 	return json.NewDecoder(re).Decode(req)
 }
 
 func (req *Request) RegisterValidations(val *validator.Validate) {
 	req.Params.RegisterValidations(val)
+}
+
+func (req *Request) GetAllChannels(reader slackoff.FileReader) (channels []string, err error) {
+	if len(req.Params.Channel) > 0 {
+		channels = append(channels, req.Params.Channel)
+	} else if len(req.Source.Channel) > 0 {
+		channels = append(channels, req.Source.Channel)
+	}
+
+	extraChannels, getErr := req.Params.GetExtraChannels(reader)
+	if getErr != nil {
+		err = getErr
+		return
+	}
+
+	channels = append(channels, extraChannels...)
+
+	return
 }
 
 // Interface assertions

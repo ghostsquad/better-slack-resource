@@ -9,12 +9,13 @@ import (
 
 func main() {
 	request := outModels.Request{}
-	err := request.Load(os.Stdin)
+	err := request.Populate(os.Stdin)
 	reportAndExitAsNecessary(err)
 
 	httpClient := &slackoff.HttpClient{}
+	ioFileReader := &slackoff.IOFileReader{}
 
-	command := out.NewCommand(os.Stderr, httpClient)
+	command := out.NewCommand(ioFileReader, os.Stderr, httpClient)
 
 	response, err := command.Run(request)
 	reportAndExitAsNecessary(err)

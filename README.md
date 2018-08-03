@@ -39,25 +39,7 @@ jobs:
 
 ## Put Params
 
-- `template` - A [Go Template](https://golang.org/pkg/text/template/). of the slack message payload as described here in the [slack docks](https://api.slack.com/incoming-webhooks#advanced_message_formatting). Keep reading for more information on what is valid within the template.
-
-    [Build metadata](https://concourse-ci.org/implementing-resources.html#resource-metadata) is available with the following:
-
-    ```
-    {{ .Metadata.BuildId }}
-    {{ .Metadata.BuildName }}
-    {{ .Metadata.BuildJobName }}
-    {{ .Metadata.BuildPipelineName }}
-    {{ .Metadata.BuildTeamName }}
-    {{ .Metadata.AtcExternalUrl }}
-
-    # The following variables are constructed for your convenience
-    # $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-    {{ .Metadata.BuildUrl }}
-
-    # $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME
-    {{ .Metadata.PipelineUrl }}
-    ```
+- `template` - A [Go Template](https://golang.org/pkg/text/template/). of the slack message payload as described here in the [slack docs](https://api.slack.com/incoming-webhooks#advanced_message_formatting). Keep reading for more information on what is valid within the template.
 
 - `template_file` - You may provide the template described above as a file instead of inline.
 
@@ -270,3 +252,7 @@ The docker container takes care of everything, see that for more instructions
 ```bash
 docker build -t slack-off .
 ```
+
+### Reference
+
+https://api.slack.com/methods/chat.postMessage

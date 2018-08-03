@@ -1,5 +1,9 @@
 *
 !/cmd
-!/glide.yaml
+!/mocks
+!/out
+!/resourcemodels
+!/*.go
+!/Gopkg.*
 !/LICENSE
 !/README.md

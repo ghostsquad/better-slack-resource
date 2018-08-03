@@ -3,7 +3,8 @@ package stepmodels
 import (
 	"gopkg.in/go-playground/validator.v9"
 	"github.com/ghostsquad/slack-off"
-	"os"
+	"strings"
+	"github.com/hashicorp/go-multierror"
 )
 
 type Params struct {
@@ -19,34 +20,71 @@ type Params struct {
 }
 
 func (p *Params) RegisterValidations(val *validator.Validate) {
-	val.RegisterStructValidation(ParamsStructLevelValidation, Params{})
+	val.RegisterStructValidation(paramsStructLevelValidation, Params{})
 }
 
-func ParamsStructLevelValidation(sl validator.StructLevel) {
+func paramsStructLevelValidation(sl validator.StructLevel) {
 	params := sl.Current().Interface().(Params)
 
-	if (len(params.Template) == 0 && len(params.TemplateFile) == 0) ||
-		(len(params.Template) > 0 && len(params.TemplateFile) > 0) {
-		sl.ReportError(params.Template, "Template", "template", "templateortemplate_file", "")
-		sl.ReportError(params.Template, "TemplateFile", "template_file", "templateortemplate_file", "")
+	templateOptions := 0
+
+	if len(params.Template) > 0 {
+		templateOptions++
 	}
 
 	if len(params.TemplateFile) > 0 {
-		if _, ok := fileExists(params.TemplateFile); !ok {
-			sl.ReportError(params.TemplateFile, "TemplateFile", "template_file", "templatefileread", "")
-		}
+		templateOptions++
 	}
 
-	if len(params.ChannelFile) > 0 {
-		if _, ok := fileExists(params.ChannelFile); !ok {
-			sl.ReportError(params.ChannelFile, "ChannelFile", "channel_file", "channelfileread", "")
-		}
+	if templateOptions != 1 {
+		sl.ReportError(params.Template, "Template", "template", "templateortemplate_file", "")
+		sl.ReportError(params.Template, "TemplateFile", "template_file", "templateortemplate_file", "")
 	}
 }
 
-func fileExists(path string) (err error, ok bool) {
-	stat, err := os.Stat(path)
-	return err, err == nil && !stat.IsDir()
+// this relies on validation to assert that exactly 1 of Template or TemplateFile are provided
+func (p *Params) GetTemplate(reader slackoff.FileReader) (template string, err error) {
+	if len(p.Template) > 0 {
+		template = p.Template
+	} else if len(p.TemplateFile) > 0 {
+		template, err = reader.ReadFile(p.TemplateFile)
+	}
+
+	return
+}
+
+func (p *Params) GetExtraChannels(reader slackoff.FileReader) (channels []string, err error) {
+	if len(p.ChannelAppend) > 0 {
+		channels = append(channels, strings.Fields(p.ChannelAppend)...)
+	}
+
+	if len(p.ChannelFile) > 0 {
+		channelFileContent, readErr := reader.ReadFile(p.ChannelFile)
+		if readErr != nil {
+			err = readErr
+			return
+		}
+
+		channels = append(channels, strings.Fields(channelFileContent)...)
+	}
+
+	return
+}
+
+func (p *Params) GetFileVars(reader slackoff.FileReader) (fileVars map[string]string, err error) {
+	var errs *multierror.Error
+
+	for k, v := range p.FileVars {
+		content, readErr := reader.ReadFile(v)
+		if readErr != nil {
+			errs = multierror.Append(errs, readErr)
+		}
+		fileVars[k] = content
+	}
+
+	err = errs.ErrorOrNil()
+
+	return
 }
 
 // Interface assertions
