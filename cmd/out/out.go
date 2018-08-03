@@ -27,8 +27,19 @@ func main() {
 
 func getSourceDir() string {
 	if len(os.Args) < 2 {
-		os.Stderr.Write([]byte(slackoff.ErrorColor.
-			Sprintf("Error: usage: %s <sources directory>", os.Args[0])))
+		printErrorMessage("Error: usage: %s <sources directory>", os.Args[0])
+		os.Exit(1)
+	}
+
+	srcDir := os.Args[1]
+	fi, err := os.Stat(srcDir)
+	if os.IsNotExist(err) {
+		printErrorMessage("Error: sources directory (%s) does not exist", srcDir)
+		os.Exit(1)
+	}
+
+	if !fi.IsDir() {
+		printErrorMessage("Error: sources (%s) is not a directory", srcDir)
 		os.Exit(1)
 	}
 
@@ -37,7 +48,11 @@ func getSourceDir() string {
 
 func reportAndExitAsNecessary(err error) {
 	if err != nil {
-		os.Stderr.Write([]byte(slackoff.ErrorColor.Sprintf("Error: %s", err)))
+		printErrorMessage("Error: %s", err)
 		os.Exit(1)
 	}
+}
+
+func printErrorMessage(format string, a ...interface{}) string {
+	os.Stderr.Write([]byte(slackoff.ErrorColor.Sprintf(format, a...)))
 }
