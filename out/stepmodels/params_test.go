@@ -161,7 +161,7 @@ func TestParams_RegisterValidations_WhenTemplateAndTemplateFileGiven(t *testing.
 
 	err := val.Struct(p)
 
-	is.Msg("Validations did prevent error when both template and template_file are given, %s", err).NotNil(err)
+	is.Msg("Validations did not prevent error when both template and template_file are given, %s", err).NotNil(err)
 }
 
 func TestParams_RegisterValidations_WhenNeitherTemplateAndTemplateFileGiven(t *testing.T)  {
@@ -176,7 +176,7 @@ func TestParams_RegisterValidations_WhenNeitherTemplateAndTemplateFileGiven(t *t
 
 	err := val.Struct(p)
 
-	is.Msg("Validations did prevent error when neither template and template_file are given, %s").NotNil(err)
+	is.Msg("Validations did not prevent error when neither template and template_file are given, %s").NotNil(err)
 }
 
 func TestParams_GetTemplate_WhenTemplateFileGiven(t *testing.T) {
