@@ -85,7 +85,75 @@ jobs:
 
 ### Dynamic Example
 
-[***Compare to how this would be done with cfcommunity/slack-notification-resource***](#using-ghostsquad/slack-off-resource)
+```yaml
+resource_types:
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: ghostsquad/slack-off
+    tag: latest
+
+- name: metadata
+  type: docker-image
+  source:
+    repository: olhtbr/metadata-resource
+
+resources:
+- name: slack-alert
+  type: slack-notification
+  source:
+    url: ((slack-url))
+
+- name: semver
+  type: semver
+  source:
+    ...
+
+jobs:
+- name: example
+  plan:
+  - get: metadata
+  - get: semver
+  - put: slack
+    params:
+      template: |
+        {
+          "attachments": [
+            {
+              "fallback": "Build Started",
+              "color": "#439FE0",
+              "text": "Build Started",
+              "title": ":gear: Build started for ${PROJECT_NAME}",
+              "title_link": {{ printf "%s/teams/%s/pipelines/%s/jobs/%s/builds/%" FileVars["ATC_EXTERNAL_URL"] FileVars["BUILD_TEAM_NAME"] FileVars["BUILD_PIPELINE_NAME"] FileVars["BUILD_JOB_NAME"] FileVars["BUILD_NAME"] }}",
+              "fields": [
+                {
+                  "title": "Project",
+                  "value": "{{ Vars["PROJECT_NAME"] }}",
+                  "short": true
+                },
+                {
+                  "title": "Revision",
+                  "value": "{{ FileVars["VERSION"] }}",
+                  "short": true
+                }
+              ]
+            }
+          ]
+        }
+      file_vars:
+        ATC_EXTERNAL_URL:    metadata/atc_external_url
+        BUILD_TEAM_NAME:     metadata/build_team_name
+        BUILD_PIPELINE_NAME: metadata/build_pipeline_name
+        BUILD_JOB_NAME:      metadata/build_job_name
+        BUILD_ID:            metadata/build_id
+        BUILD_NAME:          metadata/build_name
+        VERSION:             semver/version
+
+      vars:
+        PROJECT_NAME: My Project
+```
+
+[***Compare to how this would be done with cfcommunity/slack-notification-resource***](#why-did-i-make-this)
 
 ## Get (Not Supported)
 
@@ -199,73 +267,7 @@ That's `59` lines of code for 1 slack notification (starting at the `construct` 
 
 #### Using ghostsquad/slack-off-resource
 
-```yaml
-resource_types:
-- name: slack-notification
-  type: docker-image
-  source:
-    repository: ghostsquad/slack-off
-    tag: latest
 
-- name: metadata
-  type: docker-image
-  source:
-    repository: olhtbr/metadata-resource
-
-resources:
-- name: slack-alert
-  type: slack-notification
-  source:
-    url: ((slack-url))
-
-- name: semver
-  type: semver
-  source:
-    ...
-
-jobs:
-- name: example
-  plan:
-  - get: metadata
-  - get: semver
-  - put: slack
-    params:
-      template: |
-        {
-          "attachments": [
-            {
-              "fallback": "Build Started",
-              "color": "#439FE0",
-              "text": "Build Started",
-              "title": ":gear: Build started for ${PROJECT_NAME}",
-              "title_link": {{ printf "%s/teams/%s/pipelines/%s/jobs/%s/builds/%" FileVars["ATC_EXTERNAL_URL"] FileVars["BUILD_TEAM_NAME"] FileVars["BUILD_PIPELINE_NAME"] FileVars["BUILD_JOB_NAME"] FileVars["BUILD_NAME"] }}",
-              "fields": [
-                {
-                  "title": "Project",
-                  "value": "{{ Vars["PROJECT_NAME"] }}",
-                  "short": true
-                },
-                {
-                  "title": "Revision",
-                  "value": "{{ FileVars["VERSION"] }}",
-                  "short": true
-                }
-              ]
-            }
-          ]
-        }
-      file_vars:
-        ATC_EXTERNAL_URL:    metadata/atc_external_url
-        BUILD_TEAM_NAME:     metadata/build_team_name
-        BUILD_PIPELINE_NAME: metadata/build_pipeline_name
-        BUILD_JOB_NAME:      metadata/build_job_name
-        BUILD_ID:            metadata/build_id
-        BUILD_NAME:          metadata/build_name
-        VERSION:             semver/version
-
-      vars:
-        PROJECT_NAME: My Project
-```
 
 What you see above is `36` lines of code (just the `put` is counted), 1 step, and much more readable.
 
