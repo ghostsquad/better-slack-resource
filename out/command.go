@@ -10,6 +10,7 @@ import (
 	"text/template"
 	"bytes"
 	"encoding/json"
+	"time"
 )
 
 type command struct {
@@ -99,8 +100,9 @@ func (c *command) Run(request stepmodels.Request) (*stepmodels.Response, error) 
 	}
 
 	return &stepmodels.Response{
-		Version:  resourcemodels.Version{},
-		Metadata: []resourcemodels.MetadataPair{},
+		Version:  resourcemodels.Version{
+			Timestamp: time.Now().Unix(),
+		},
 	}, nil
 }
 

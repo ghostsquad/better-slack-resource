@@ -14,7 +14,7 @@ func TestResponse_Write(t *testing.T) {
 
 	r := &Response{
 		Version: resourcemodels.Version{
-			Path: "foo",
+			Timestamp: 1,
 		},
 	}
 
@@ -23,6 +23,6 @@ func TestResponse_Write(t *testing.T) {
 	is.Nil(err)
 
 	result := buf.String()
-	is.Equal(result, `{"version":{"path":"foo"},"metadata":null}` + "\n")
+	is.Equal(result, `{"version":{"timestamp":1}}` + "\n")
 }
 
