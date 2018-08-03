@@ -13,13 +13,15 @@ import (
 )
 
 type command struct {
-	fileReader			slackoff.FileReader
-	writer 			io.Writer
-	httpPoster	slackoff.HttpPoster
+	srcDir      string
+	fileReader  slackoff.FileReader
+	writer      io.Writer
+	httpPoster  slackoff.HttpPoster
 }
 
-func NewCommand(fileReader slackoff.FileReader, writer io.Writer, httpPoster slackoff.HttpPoster) *command {
+func NewCommand(srcDir string, fileReader slackoff.FileReader, writer io.Writer, httpPoster slackoff.HttpPoster) *command {
 	return &command{
+		srcDir: srcDir,
 		fileReader: fileReader,
 		writer: writer,
 		httpPoster: httpPoster,
@@ -52,17 +54,17 @@ func (c *command) Run(request stepmodels.Request) (*stepmodels.Response, error) 
 		return nil, errs
 	}
 
-	channels, err := request.GetAllChannels(c.fileReader)
+	channels, err := request.GetAllChannels(c.srcDir, c.fileReader)
 	if err != nil {
 		return nil, err
 	}
 
-	fileVars, err := request.Params.GetFileVars(c.fileReader)
+	fileVars, err := request.Params.GetFileVars(c.srcDir, c.fileReader)
 	if err != nil {
 		return nil, err
 	}
 
-	templateText, err := request.Params.GetTemplate(c.fileReader)
+	templateText, err := request.Params.GetTemplate(c.srcDir, c.fileReader)
 	if err != nil {
 		return nil, err
 	}

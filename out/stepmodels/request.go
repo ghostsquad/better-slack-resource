@@ -21,14 +21,14 @@ func (req *Request) RegisterValidations(val *validator.Validate) {
 	req.Params.RegisterValidations(val)
 }
 
-func (req *Request) GetAllChannels(reader slackoff.FileReader) (channels []string, err error) {
+func (req *Request) GetAllChannels(srcDir string, reader slackoff.FileReader) (channels []string, err error) {
 	if len(req.Params.Channel) > 0 {
 		channels = append(channels, req.Params.Channel)
 	} else if len(req.Source.Channel) > 0 {
 		channels = append(channels, req.Source.Channel)
 	}
 
-	extraChannels, getErr := req.Params.GetExtraChannels(reader)
+	extraChannels, getErr := req.Params.GetExtraChannels(srcDir, reader)
 	if getErr != nil {
 		err = getErr
 		return

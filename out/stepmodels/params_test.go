@@ -193,9 +193,9 @@ func TestParams_GetTemplate_WhenTemplateFileGiven(t *testing.T) {
 	}
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
-	mockReader.EXPECT().ReadFile(expectedPath).Return(expectedContents, nil)
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath).Return(expectedContents, nil)
 
-	tmpl, err := p.GetTemplate(mockReader)
+	tmpl, err := p.GetTemplate("/src", mockReader)
 
 	is.Nil(err)
 	is.Equal(tmpl, expectedContents)
@@ -215,7 +215,7 @@ func TestParams_GetTemplate_WhenTemplateGiven(t *testing.T) {
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
 
-	tmpl, err := p.GetTemplate(mockReader)
+	tmpl, err := p.GetTemplate("/src", mockReader)
 
 	is.Nil(err)
 	is.Equal(tmpl, expectedContents)
@@ -233,7 +233,7 @@ func TestParams_GetExtraChannels_WhenChannelAppendHasOneValue(t *testing.T) {
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
 
-	channels, err := p.GetExtraChannels(mockReader)
+	channels, err := p.GetExtraChannels("/src", mockReader)
 
 	is.Nil(err)
 	is.Equal(channels, []string{"ch1"})
@@ -251,7 +251,7 @@ func TestParams_GetExtraChannels_WhenChannelAppendHasMultipleValue(t *testing.T)
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
 
-	channels, err := p.GetExtraChannels(mockReader)
+	channels, err := p.GetExtraChannels("/src", mockReader)
 
 	is.Nil(err)
 	is.Equal(channels, []string{"ch1", "ch2"})
@@ -270,9 +270,9 @@ func TestParams_GetExtraChannels_WhenChannelFileIncluded(t *testing.T) {
 	}
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
-	mockReader.EXPECT().ReadFile(expectedPath).Return("ch1    ch2\n ch3\tch4", nil)
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath).Return("ch1    ch2\n ch3\tch4", nil)
 
-	channels, err := p.GetExtraChannels(mockReader)
+	channels, err := p.GetExtraChannels("/src", mockReader)
 
 	is.Nil(err)
 	is.Equal(channels, []string{"ch1", "ch2", "ch3", "ch4"})
@@ -292,9 +292,9 @@ func TestParams_GetExtraChannels_WhenChannelAppendAndChannelFileIncluded(t *test
 	}
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
-	mockReader.EXPECT().ReadFile(expectedPath).Return("ch3 ch4", nil)
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath).Return("ch3 ch4", nil)
 
-	channels, err := p.GetExtraChannels(mockReader)
+	channels, err := p.GetExtraChannels("/src/", mockReader)
 
 	is.Nil(err)
 	is.Equal(channels, []string{"ch1", "ch2", "ch3", "ch4"})
@@ -317,9 +317,9 @@ func TestParams_GetFileVars(t *testing.T) {
 	}
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
-	mockReader.EXPECT().ReadFile(expectedPath).Return(expectedValue, nil)
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath).Return(expectedValue, nil)
 
-	fileVars, err := p.GetFileVars(mockReader)
+	fileVars, err := p.GetFileVars("/src", mockReader)
 
 	is.Nil(err)
 	is.Equal(fileVars, map[string]string{expectedKey: expectedValue})
@@ -347,10 +347,10 @@ func TestParams_GetFileVars_WhenMultipleFiles(t *testing.T) {
 	}
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
-	mockReader.EXPECT().ReadFile(expectedPath1).Return(expectedValue1, nil)
-	mockReader.EXPECT().ReadFile(expectedPath2).Return(expectedValue2, nil)
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath1).Return(expectedValue1, nil)
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath2).Return(expectedValue2, nil)
 
-	fileVars, err := p.GetFileVars(mockReader)
+	fileVars, err := p.GetFileVars("/src", mockReader)
 
 	is.Nil(err)
 	is.Equal(fileVars, map[string]string{
@@ -379,10 +379,10 @@ func TestParams_GetFileVars_WhenReadErrorOccurs(t *testing.T) {
 	}
 
 	mockReader := mock_slack_off.NewMockFileReader(mockCtrl)
-	mockReader.EXPECT().ReadFile(expectedPath1).Return("", errors.New(fmt.Sprintf("file read err: %s", expectedPath1)))
-	mockReader.EXPECT().ReadFile(expectedPath2).Return("", errors.New(fmt.Sprintf("file read err: %s", expectedPath2)))
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath1).Return("", errors.New(fmt.Sprintf("file read err: %s", expectedPath1)))
+	mockReader.EXPECT().ReadFile("/src/" + expectedPath2).Return("", errors.New(fmt.Sprintf("file read err: %s", expectedPath2)))
 
-	_, err := p.GetFileVars(mockReader)
+	_, err := p.GetFileVars("/src", mockReader)
 
 	is.NotNil(err)
 	mErr, ok := err.(*multierror.Error)

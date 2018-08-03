@@ -5,6 +5,7 @@ import (
 	"github.com/ghostsquad/slack-off"
 	"strings"
 	"github.com/hashicorp/go-multierror"
+	"path"
 )
 
 type Params struct {
@@ -43,23 +44,23 @@ func paramsStructLevelValidation(sl validator.StructLevel) {
 }
 
 // this relies on validation to assert that exactly 1 of Template or TemplateFile are provided
-func (p *Params) GetTemplate(reader slackoff.FileReader) (template string, err error) {
+func (p *Params) GetTemplate(srcDir string, reader slackoff.FileReader) (template string, err error) {
 	if len(p.Template) > 0 {
 		template = p.Template
 	} else if len(p.TemplateFile) > 0 {
-		template, err = reader.ReadFile(p.TemplateFile)
+		template, err = reader.ReadFile(path.Join(srcDir, p.TemplateFile))
 	}
 
 	return
 }
 
-func (p *Params) GetExtraChannels(reader slackoff.FileReader) (channels []string, err error) {
+func (p *Params) GetExtraChannels(srcDir string, reader slackoff.FileReader) (channels []string, err error) {
 	if len(p.ChannelAppend) > 0 {
 		channels = append(channels, strings.Fields(p.ChannelAppend)...)
 	}
 
 	if len(p.ChannelFile) > 0 {
-		channelFileContent, readErr := reader.ReadFile(p.ChannelFile)
+		channelFileContent, readErr := reader.ReadFile(path.Join(srcDir, p.ChannelFile))
 		if readErr != nil {
 			err = readErr
 			return
@@ -71,12 +72,12 @@ func (p *Params) GetExtraChannels(reader slackoff.FileReader) (channels []string
 	return
 }
 
-func (p *Params) GetFileVars(reader slackoff.FileReader) (map[string]string, error) {
+func (p *Params) GetFileVars(srcDir string, reader slackoff.FileReader) (map[string]string, error) {
 	var errs *multierror.Error
 	fileVars := make(map[string]string)
 
 	for k, v := range p.FileVars {
-		content, readErr := reader.ReadFile(v)
+		content, readErr := reader.ReadFile(path.Join(srcDir, v))
 		if readErr != nil {
 			errs = multierror.Append(errs, readErr)
 		}
