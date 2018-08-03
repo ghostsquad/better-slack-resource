@@ -99,6 +99,8 @@ This is currently not supported, but I plan on seeing if it's possible to provid
 
 Here's what my slack notifications used to look in my pipelines. I didn't want just static messages, I wanted rich, descriptive, dynamic messages. So I had to do this:
 
+#### Using cfcommunity/slack-notification-resource
+
 ```
 resource_types:
 - name: slack-notification
@@ -195,7 +197,7 @@ jobs:
 
 That's `59` lines of code for 1 slack notification (starting at the `construct` task, and ending at the end of `put`), divided between 2 steps.
 
-Here's the same thing using `slack-off`.
+#### Using ghostsquad/slack-off-resource
 
 ```yaml
 resource_types:
