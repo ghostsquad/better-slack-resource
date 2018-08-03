@@ -11,6 +11,110 @@ import (
 	"github.com/hashicorp/go-multierror"
 )
 
+func TestParams_Validations_WhenFileVarsEmpty(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("empty vars should be ok, %s", err).Nil(err)
+}
+
+func TestParams_Validations_WhenFileVarsNotEmpty(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{
+		FileVars: map[string]string{
+			"foo": "bar",
+		},
+	}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("valid map of vars should be ok, %s", err).Nil(err)
+}
+
+func TestParams_Validations_WhenFileVarsEmptyKey(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{
+		FileVars: map[string]string{
+			"": "bar",
+		},
+	}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("Validations did not prevent an empty key, %s", err).NotNil(err)
+}
+
+func TestParams_Validations_WhenFileVarsEmptyValue(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{
+		FileVars: map[string]string{
+			"foo": "",
+		},
+	}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("Validations did not prevent an empty value, %s", err).NotNil(err)
+}
+
+func TestParams_Validations_VarsEmpty(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("empty vars should be ok, %s", err).Nil(err)
+}
+
+func TestParams_Validations_VarsFull(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{
+		Vars: map[string]string{
+			"foo": "bar",
+		},
+	}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("full vars should be ok, %s", err).Nil(err)
+}
+
+func TestParams_Validations_VarsEmptyKey(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{
+		Vars: map[string]string{
+			"": "bar",
+		},
+	}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("validation did not prevent an empty key, %s", err).NotNil(err)
+}
+
+func TestParams_Validations_VarsEmptyValue(t *testing.T) {
+	is := is.New(t)
+
+	p := Params{
+		Vars: map[string]string{
+			"bar": "",
+		},
+	}
+	val := slackoff.InitValidator()
+	err := val.Struct(p)
+
+	is.Msg("validation did not prevent an empty value, %s", err).NotNil(err)
+}
+
 func TestParams_RegisterValidations_WhenTemplateGiven(t *testing.T) {
 	is := is.New(t)
 
