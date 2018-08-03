@@ -1,7 +1,6 @@
 # Slack Off
 
-A [Concourse](https://concourse-ci.org/) resource for sending slack notifications
-
+Do you want to send rich, dynamic slack notifications from [Concourse](https://concourse-ci.org/)? This might be the resource for you!
 
 ## Quick Start
 
@@ -265,11 +264,7 @@ jobs:
 
 That's `59` lines of code for 1 slack notification (starting at the `construct` task, and ending at the end of `put`), divided between 2 steps.
 
-#### Using ghostsquad/slack-off-resource
-
-
-
-What you see above is `36` lines of code (just the `put` is counted), 1 step, and much more readable.
+You can compare this to the [example above](#dynamic-example).
 
 ## Development
 
