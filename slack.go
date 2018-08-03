@@ -7,7 +7,7 @@ import (
 )
 
 type WebhookMessage struct {
-	Text    		string             `json:"text,omitempty"`
+	Text        string             `json:"text,omitempty"`
 	Attachments []slack.Attachment `json:"attachments,omitempty"`
 	Channel     string             `json:"channel,omitempty"`
 	IconEmoji   string             `json:"icon_emoji,omitempty"`
