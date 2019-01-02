@@ -43,7 +43,7 @@ func (h *HttpClient) Post(url string, jsonPayload interface{}) (*http.Response, 
 	response, err := http.Post(url, "application/json", bytes.NewReader(raw));
 
 	if err != nil {
-		return response, errors.Wrap(err, "failed to post webhook")
+		return response, errors.Wrap(err, "failed to post")
 	}
 
 	if response.StatusCode != http.StatusOK {

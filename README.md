@@ -34,7 +34,6 @@ jobs:
 - `url`: ***REQUIRED*** Incoming webhook url. See https://api.slack.com/incoming-webhooks
 - `disable_put`: *optional* Convenience parameter for disabling all notifications during development/debugging. `default: false`
 - `debug`: *optional* Prints the message to send as resource output. `default: false`
-- `channel`: *optional* Overrides the default channel for the provided webhook url
 
 ## Put Params
 
@@ -69,18 +68,6 @@ jobs:
     ```
     {{ .Vars["foo_key"] }}
     ```
-
-### Optional Params
-
-- `channel`: *optional* Overrides the channel(s) set in the `source` configuration (if set), as well as the default channel for the webhook. #channel and @user forms are allowed. You can notify multiple channels separated by whitespace, like #channel @user.
-
-- `channel_append`: *optional* Instead of overriding the `source` channel, this will add one more more channels to the list. #channel and @user forms are allowed. You can notify multiple channels separated by whitespace, like #channel @user. May be combined with `channel`.
-
-- `channel_file`: *optional* File that contains a list of channels to send message to. May be used with `channel` and/or `channel_append`. The lists will be concatenated.
-
-- `icon_url`: *optional* Override icon by providing URL to the image.
-
-- `icon_emoji`: *optional* Override icon by providing emoji code (e.g. `:ghost:`)
 
 ### Dynamic Example
 
@@ -168,7 +155,7 @@ Here's what my slack notifications used to look in my pipelines. I didn't want j
 
 #### Using cfcommunity/slack-notification-resource
 
-```
+```yaml
 resource_types:
 - name: slack-notification
   type: docker-image
@@ -192,8 +179,7 @@ resources:
 
 - name: semver
   type: semver
-  source:
-    ...
+  source: { }
 
 jobs:
 - name: example

@@ -5,19 +5,23 @@ import (
 	"github.com/ghostsquad/slack-off"
 	outModels "github.com/ghostsquad/slack-off/out/stepmodels"
 	"github.com/ghostsquad/slack-off/out"
+	"encoding/json"
 )
 
 func main() {
 	srcDir := getSourceDir()
 
-	request := outModels.Request{}
-	err := request.Populate(os.Stdin)
+	ioFileReader := &slackoff.IOFileReader{}
+	request := outModels.NewRequest(srcDir, ioFileReader)
+
+	err := json.NewDecoder(os.Stdin).Decode(request)
 	reportAndExitAsNecessary(err)
 
 	httpClient := &slackoff.HttpClient{}
-	ioFileReader := &slackoff.IOFileReader{}
+	templatizer, err := out.NewTemplatizer(srcDir, request.Params, ioFileReader)
+	reportAndExitAsNecessary(err)
 
-	command := out.NewCommand(srcDir, ioFileReader, os.Stderr, httpClient)
+	command := out.NewCommand(templatizer, os.Stderr, httpClient)
 
 	response, err := command.Run(request)
 	reportAndExitAsNecessary(err)
