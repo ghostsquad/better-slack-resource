@@ -1,0 +1,9 @@
+*
+!/cmd
+!/mocks
+!/out
+!/resourcemodels
+!/*.go
+!/Gopkg.*
+!/LICENSE
+!/README.md
